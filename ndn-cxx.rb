@@ -12,6 +12,14 @@ class NdnCxx < Formula
   depends_on "boost"
   depends_on "cryptopp"
 
+  bottle do
+    root_url "http://named-data.net/binaries/homebrew"
+    prefix "/usr/local"
+    cellar "/usr/local/Cellar"
+
+    sha1 "4691c2aab216a3f4f828017b4da2a15922fb9be6" => :yosemite
+  end
+  
   def install
     boost = Formula["boost"]
     cryptopp = Formula["cryptopp"]
