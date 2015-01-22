@@ -46,17 +46,16 @@ class Nfd < Formula
     (buildpath/"net.named-data.nrd.plist").write plist_nrd
     (share/"ndn/").install "net.named-data.nfd.plist"
     (share/"ndn/").install "net.named-data.nrd.plist"
-
-    # Default configuration
-    begin
-      (buildpath/"nfd.conf").write nfd_conf
-      (etc/"ndn/").install "nfd.conf"
-    rescue
-      # Do not overwrite existing configuration
-    end
   end
 
   def post_install
+    # Default configuration
+    begin
+      (etc/"ndn/nfd.conf").write nfd_conf
+    rescue
+      # Do not overwrite existing configuration
+    end
+
     ndn_cxx = Formula["ndn-cxx"]
 
     (var/'log/ndn').mkpath
