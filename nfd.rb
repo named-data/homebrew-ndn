@@ -13,10 +13,17 @@ class Nfd < Formula
   depends_on "boost"
   depends_on "ndn-cxx"
 
+  bottle do
+    root_url "http://named-data.net/binaries/homebrew"
+    prefix "/usr/local"
+    cellar "/usr/local/Cellar"
+
+    sha1 "e1948fbaa956e08786f42b231e8a9dc635bb2a4f" => :yosemite
+  end
+
   def install
     boost = Formula["boost"]
     cryptopp = Formula["cryptopp"]
-    ndn_cxx = Formula["ndn-cxx"]
 
     FileUtils.rm (buildpath/"tools/nfd-start.sh")
     FileUtils.rm (buildpath/"tools/nfd-stop.sh")
@@ -40,8 +47,6 @@ class Nfd < Formula
     (share/"ndn/").install "net.named-data.nfd.plist"
     (share/"ndn/").install "net.named-data.nrd.plist"
 
-    # generate keys
-
     # Default configuration
     begin
       (buildpath/"nfd.conf").write nfd_conf
@@ -49,6 +54,10 @@ class Nfd < Formula
     rescue
       # Do not overwrite existing configuration
     end
+  end
+
+  def post_install
+    ndn_cxx = Formula["ndn-cxx"]
 
     (var/'log/ndn').mkpath
 
@@ -57,27 +66,47 @@ class Nfd < Formula
     (nfd_home/'.ndn').mkpath
     (nrd_home/'.ndn').mkpath
 
+    nfd_certgen = -> {
+      begin
+        (nfd_home/'.ndn/client.conf').write "tpm=tpm-file:\n"
+
+        # Generate self-signed cert for NFD
+        system "HOME=#{nfd_home} #{ndn_cxx.bin}/ndnsec-keygen /localhost/daemons/nfd | " \
+               "HOME=#{nfd_home} #{ndn_cxx.bin}/ndnsec-install-cert -"
+      rescue
+      end
+    }
+
+    nrd_certgen = -> {
+      begin
+        (nrd_home/'.ndn/client.conf').write "tpm=tpm-file:\n"
+        # Generate self-signed cert for NRD
+        system "HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-keygen /localhost/daemons/nrd | " \
+               "HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-install-cert -"
+      rescue
+      end
+    }
+
+    config_nrd_cert_in_nfd = -> {
+      # Dump RIB Management daemon's certificate
+      (etc/"ndn/certs").mkpath
+      system "HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-dump-certificate `HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-get-default -c` > " \
+             "#{etc}/ndn/certs/localhost_daemons_nrd.ndncert"
+    }
+
+    nfd_certgen.()
+    nrd_certgen.()
+
     begin
-      (nfd_home/'.ndn/client.conf').write "tpm=tpm-file:\n"
-
-      # Generate self-signed cert for NFD
-      system "HOME=#{nfd_home} #{ndn_cxx.bin}/ndnsec-keygen /localhost/daemons/nfd | " \
-             "HOME=#{nfd_home} #{ndn_cxx.bin}/ndnsec-install-cert -"
+      config_nrd_cert_in_nfd.()
     rescue
-    end
+      rm_r nfd_home
+      rm_r nrd_home
 
-    begin
-      (nrd_home/'.ndn/client.conf').write "tpm=tpm-file:\n"
-      # Generate self-signed cert for NRD
-      system "HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-keygen /localhost/daemons/nrd | " \
-             "HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-install-cert -"
-    rescue
+      nfd_certgen.()
+      nrd_certgen.()
+      config_nrd_cert_in_nfd.()
     end
-
-    # Dump RIB Management daemon's certificate
-    (etc/"ndn/certs").mkpath
-    system "HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-dump-certificate -i /localhost/daemons/nrd > " \
-           "#{etc}/ndn/certs/localhost_daemons_nrd.ndncert"
   end
 
   def caveats
