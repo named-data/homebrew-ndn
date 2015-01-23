@@ -18,7 +18,8 @@ class Nfd < Formula
     prefix "/usr/local"
     cellar "/usr/local/Cellar"
 
-    sha1 "e1948fbaa956e08786f42b231e8a9dc635bb2a4f" => :yosemite
+    revision 1
+    sha1 "36be2b9d939cbc80de522becea94a024822edd1c" => :yosemite
   end
 
   def install

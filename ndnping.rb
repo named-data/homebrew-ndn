@@ -15,7 +15,8 @@ class Ndnping < Formula
     prefix "/usr/local"
     cellar "/usr/local/Cellar"
 
-    sha1 "d76d590126c5467c3d1451d286ae8c132d773754" => :yosemite
+    revision 1
+    sha1 "eb7a758d27f4c668dd0d2496dd9623e0588dffe6" => :yosemite
   end
 
   def install

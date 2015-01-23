@@ -17,7 +17,8 @@ class NdnCxx < Formula
     prefix "/usr/local"
     cellar "/usr/local/Cellar"
 
-    sha1 "4691c2aab216a3f4f828017b4da2a15922fb9be6" => :yosemite
+    revision 1
+    sha1 "cc4dd99fc91cc844df55e434362443107d25295c" => :yosemite
   end
   
   def install

@@ -15,7 +15,8 @@ class Ndndump < Formula
     prefix "/usr/local"
     cellar "/usr/local/Cellar"
 
-    sha1 "24e2d3df9a30041f9941be86717f39be5f0cd96f" => :yosemite
+    revision 1
+    sha1 "ddde650c5e0845d51ca5cf7e881b9d3834a27561" => :yosemite
   end
 
   def install
