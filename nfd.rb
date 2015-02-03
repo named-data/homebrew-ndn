@@ -1,10 +1,10 @@
 require "formula"
 
 class Nfd < Formula
-  version "0.2.0-112-g6316220"
+  version "0.3.0"
   homepage "http://named-data/doc/NFD/"
   url "https://github.com/named-data/NFD", :using => :git,
-       :revision => "6316220d3651c2ae705443e684148503fbb0dbb4"
+       :tag => "NFD-0.3.0"
 
   head "https://github.com/named-data/NFD", :using => :git,
        :branch => "master"
@@ -17,9 +17,6 @@ class Nfd < Formula
     root_url "http://named-data.net/binaries/homebrew"
     prefix "/usr/local"
     cellar "/usr/local/Cellar"
-
-    revision 1
-    sha1 "36be2b9d939cbc80de522becea94a024822edd1c" => :yosemite
   end
 
   def install
