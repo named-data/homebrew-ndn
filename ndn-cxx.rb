@@ -1,24 +1,22 @@
 require "formula"
 
 class NdnCxx < Formula
-  version "0.2.0-135-g29ea835"
+  version "0.3.0"
   homepage "http://named-data/doc/ndn-cxx/"
   url "https://github.com/named-data/ndn-cxx", :using => :git,
-       :revision => "29ea8358e49cfc21ae4a290748ea24d5eaf98b6d"
+       :tag => "ndn-cxx-0.3.0"
 
   head "https://github.com/named-data/ndn-cxx", :using => :git,
        :branch => "master"
 
-  depends_on "boost"
+  depends_on "pkg-config" => :build
   depends_on "cryptopp"
+  depends_on "boost"
 
   bottle do
     root_url "http://named-data.net/binaries/homebrew"
     prefix "/usr/local"
     cellar "/usr/local/Cellar"
-
-    revision 1
-    sha1 "cc4dd99fc91cc844df55e434362443107d25295c" => :yosemite
   end
   
   def install
