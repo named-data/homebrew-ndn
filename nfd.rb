@@ -15,8 +15,7 @@ class Nfd < Formula
 
   bottle do
     root_url "http://named-data.net/binaries/homebrew"
-    prefix "/usr/local"
-    cellar "/usr/local/Cellar"
+    sha1 "6c085b6d72339fb602eb7159bbf07bb009dda682" => :yosemite
   end
 
   def install
