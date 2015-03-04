@@ -1,10 +1,10 @@
 require "formula"
 
 class Nfd < Formula
-  version "0.3.0"
+  version "0.3.1"
   homepage "http://named-data/doc/NFD/"
   url "https://github.com/named-data/NFD", :using => :git,
-       :tag => "NFD-0.3.0"
+       :tag => "NFD-0.3.1"
 
   head "https://github.com/named-data/NFD", :using => :git,
        :branch => "master"
@@ -15,7 +15,6 @@ class Nfd < Formula
 
   bottle do
     root_url "http://named-data.net/binaries/homebrew"
-    sha1 "6c085b6d72339fb602eb7159bbf07bb009dda682" => :yosemite
   end
 
   def install
