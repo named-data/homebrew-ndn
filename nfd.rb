@@ -39,9 +39,7 @@ class Nfd < Formula
 
     # Startup scripts
     (buildpath/"net.named-data.nfd.plist").write plist_nfd
-    (buildpath/"net.named-data.nrd.plist").write plist_nrd
     (share/"ndn/").install "net.named-data.nfd.plist"
-    (share/"ndn/").install "net.named-data.nrd.plist"
   end
 
   def post_install
@@ -57,9 +55,7 @@ class Nfd < Formula
     (var/'log/ndn').mkpath
 
     nfd_home = var/'lib/ndn/nfd'
-    nrd_home = var/'lib/ndn/nrd'
     (nfd_home/'.ndn').mkpath
-    (nrd_home/'.ndn').mkpath
 
     nfd_certgen = -> {
       begin
@@ -68,39 +64,28 @@ class Nfd < Formula
         # Generate self-signed cert for NFD
         system "HOME=#{nfd_home} #{ndn_cxx.bin}/ndnsec-keygen /localhost/daemons/nfd | " \
                "HOME=#{nfd_home} #{ndn_cxx.bin}/ndnsec-install-cert -"
+
+        system "sudo chown -R nobody:nogroup \"#{nfd_home}\""
       rescue
       end
     }
 
-    nrd_certgen = -> {
-      begin
-        (nrd_home/'.ndn/client.conf').write "tpm=tpm-file:\n"
-        # Generate self-signed cert for NRD
-        system "HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-keygen /localhost/daemons/nrd | " \
-               "HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-install-cert -"
-      rescue
-      end
-    }
-
-    config_nrd_cert_in_nfd = -> {
-      # Dump RIB Management daemon's certificate
+    config_nfd_cert = -> {
+      # Dump NFD certificate
       (etc/"ndn/certs").mkpath
-      system "HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-dump-certificate `HOME=#{nrd_home} #{ndn_cxx.bin}/ndnsec-get-default -c` > " \
-             "#{etc}/ndn/certs/localhost_daemons_nrd.ndncert"
+      system "HOME=#{nfd_home} #{ndn_cxx.bin}/ndnsec-dump-certificate $(HOME=#{nfd_home} #{ndn_cxx.bin}/ndnsec-get-default -c) > " \
+             "#{etc}/ndn/certs/localhost_daemons_nfd.ndncert"
     }
 
     nfd_certgen.()
-    nrd_certgen.()
 
     begin
-      config_nrd_cert_in_nfd.()
+      config_nfd_cert.()
     rescue
       rm_r nfd_home
-      rm_r nrd_home
 
       nfd_certgen.()
-      nrd_certgen.()
-      config_nrd_cert_in_nfd.()
+      config_nfd_cert.()
     end
   end
 
@@ -124,9 +109,11 @@ class Nfd < Formula
 
   def nfd_conf; <<-EOS.undent
     ; The general section contains settings of nfd process.
-    ; general
-    ; {
-    ; }
+    general
+    {
+       user nobody
+       group nogroup
+    }
 
     log
     {
@@ -241,7 +228,7 @@ class Nfd < Formula
     {
       authorize
       {
-        certfile certs/localhost_daemons_nrd.ndncert
+        certfile certs/localhost_daemons_nfd.ndncert
         privileges
         {
             faces
@@ -312,34 +299,6 @@ class Nfd < Formula
     EOS
   end
 
-  def plist_nrd; <<-EOS.undent
-    <?xml version='1.0' encoding='UTF-8'?>
-    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-    "http://www.apple.com/DTDs/PropertyList-1.0.dtd" >
-    <plist version='1.0'>
-    <dict>
-    <key>Label</key><string>net.named-data.nrd</string>
-    <key>ProgramArguments</key>
-    <array>
-      <string>#{opt_bin}/nrd</string>
-      <string>--config</string>
-      <string>#{etc}/ndn/nfd.conf</string>
-    </array>
-    <key>UserName</key><string>nobody</string>
-    <key>GroupName</key><string>nogroup</string>
-    <key>EnvironmentVariables</key>
-    <dict>
-      <key>HOME</key><string>#{var}/lib/ndn/nrd</string>
-    </dict>
-    <key>Disabled</key><true/>
-    <key>KeepAlive</key><true/>
-    <key>StandardErrorPath</key><string>#{var}/log/ndn/nrd.log</string>
-    <key>ProcessType</key><string>Background</string>
-    </dict>
-    </plist>
-    EOS
-  end
-
   def nfd_start; <<-EOS.undent
     #!@BASH@
 
@@ -349,7 +308,7 @@ class Nfd < Formula
       -h)
         echo Usage
         echo $0
-        echo "  Start NFD and RIB Management daemon"
+        echo "  Start NFD"
         exit 0
         ;;
       -V)
@@ -370,12 +329,7 @@ class Nfd < Formula
     fi
 
     sudo chown root #{share}/ndn/net.named-data.nfd.plist
-    sudo chown root #{share}/ndn/net.named-data.nrd.plist
-    sudo chown -R nobody:nogroup #{var}/lib/ndn/nrd
-    sudo chown -R nobody:nogroup #{var}/log/ndn
-
     sudo launchctl load -w #{share}/ndn/net.named-data.nfd.plist
-    sudo launchctl load -w #{share}/ndn/net.named-data.nrd.plist
     EOS
   end
 
@@ -388,7 +342,7 @@ class Nfd < Formula
       -h)
         echo Usage
         echo $0
-        echo "  Stop NFD and RIB Management daemon"
+        echo "  Stop NFD"
         exit 0
         ;;
       -V)
@@ -409,7 +363,6 @@ class Nfd < Formula
     fi
 
     sudo launchctl unload -w #{share}/ndn/net.named-data.nfd.plist
-    sudo launchctl unload -w #{share}/ndn/net.named-data.nrd.plist
     EOS
   end
 end
