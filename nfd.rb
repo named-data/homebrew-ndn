@@ -1,10 +1,10 @@
 require "formula"
 
 class Nfd < Formula
-  version "0.3.1"
+  version "0.3.2"
   homepage "http://named-data/doc/NFD/"
   url "https://github.com/named-data/NFD", :using => :git,
-       :tag => "NFD-0.3.1"
+       :tag => "NFD-0.3.2"
 
   head "https://github.com/named-data/NFD", :using => :git,
        :branch => "master"
