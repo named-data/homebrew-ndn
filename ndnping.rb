@@ -1,10 +1,11 @@
 require "formula"
 
 class Ndnping < Formula
-  version "0.1.0-11-g1283684"
+  version "0.1.0-12-gd3675f5"
+
   homepage "https://github.com/named-data/ndn-tlv-ping"
   url "https://github.com/named-data/ndn-tlv-ping", :using => :git,
-       :revision => "1283684bacb2352de38c8f0ad21a069875583d91"
+       :revision => "d3675f528af468d59b2c505057acd21b56210c5c"
 
   depends_on "pkg-config" => :build
   depends_on "boost"
