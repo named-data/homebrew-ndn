@@ -1,10 +1,10 @@
 require "formula"
 
 class Nfd < Formula
-  version "0.3.2"
+  version "0.3.3"
   homepage "http://named-data/doc/NFD/"
   url "https://github.com/named-data/NFD", :using => :git,
-       :tag => "NFD-0.3.2"
+       :tag => "NFD-0.3.3"
 
   head "https://github.com/named-data/NFD", :using => :git,
        :branch => "master"
@@ -138,7 +138,6 @@ class Nfd < Formula
       ;
       ; Run:
       ;   nfd --modules
-      ;   nrd --modules
       ;
       ; Or look for NFD_LOG_INIT(<module name>) statements in .cpp files
       ;
