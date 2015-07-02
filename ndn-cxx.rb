@@ -1,10 +1,10 @@
 require "formula"
 
 class NdnCxx < Formula
-  version "0.3.2"
+  version "0.3.3"
   homepage "http://named-data/doc/ndn-cxx/"
   url "https://github.com/named-data/ndn-cxx", :using => :git,
-       :tag => "ndn-cxx-0.3.2"
+       :tag => "ndn-cxx-0.3.3"
 
   head "https://github.com/named-data/ndn-cxx", :using => :git,
        :branch => "master"
@@ -24,6 +24,8 @@ class NdnCxx < Formula
     (buildpath/"VERSION").write version
 
     system "./waf", "configure",
+             "--disable-static",
+             "--enable-shared",
              "--without-pch",
              "--sysconfdir=#{etc}",
              "--prefix=#{prefix}",
