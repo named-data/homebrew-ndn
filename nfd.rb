@@ -1,10 +1,10 @@
 require "formula"
 
 class Nfd < Formula
-  version "0.3.4"
+  version "0.4.0-beta2"
   homepage "http://named-data/doc/NFD/"
   url "https://github.com/named-data/NFD", :using => :git,
-       :tag => "NFD-0.3.4"
+       :tag => "NFD-0.4.0-beta2"
 
   head "https://github.com/named-data/NFD", :using => :git,
        :branch => "master"
@@ -258,15 +258,20 @@ class Nfd < Formula
         }
       }
 
-      remote_register
+      auto_prefix_propagate
       {
         cost 15 ; forwarding cost of prefix registered on remote router
-        timeout 10000 ; timeout (in milliseconds) of remote prefix registration command
-        retry 0 ; maximum number of retries for each remote prefix registration command
+        timeout 10000 ; timeout (in milliseconds) of prefix registration command for propagation
 
-        refresh_interval 300 ; interval (in seconds) before refreshing the registration
+        refresh_interval 300 ; interval (in seconds) before refreshing the propagation
         ; This setting should be less than face_system.udp.idle_time,
         ; so that the face is kept alive on the remote router.
+
+        base_retry_wait 50 ; base wait time (in seconds) before retrying propagation
+        max_retry_wait 3600 ; maximum wait time (in seconds) before retrying propagation
+        ; for consequent retries, the wait time before each retry is calculated based on the back-off
+        ; policy. Initially, the wait time is set to base_retry_wait, then it will be doubled for every
+        ; retry unless beyond the max_retry_wait, in which case max_retry_wait is set as the wait time.
       }
     }
     EOS

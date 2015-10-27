@@ -1,10 +1,10 @@
 require "formula"
 
 class NdnCxx < Formula
-  version "0.3.4"
+  version "0.4.0-beta2"
   homepage "http://named-data/doc/ndn-cxx/"
   url "https://github.com/named-data/ndn-cxx", :using => :git,
-       :tag => "ndn-cxx-0.3.4"
+       :tag => "ndn-cxx-0.4.0-beta2"
 
   head "https://github.com/named-data/ndn-cxx", :using => :git,
        :branch => "master"
