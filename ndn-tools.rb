@@ -1,10 +1,10 @@
 require "formula"
 
 class NdnTools < Formula
-  version "0.2-2-ge02fb52"
+  version "0.2-6-gae2c9f7"
   homepage "https://github.com/named-data/ndn-tools"
   url "https://github.com/named-data/ndn-tools", :using => :git,
-       :revision => "e02fb5209092559d5fe00cb19bd8382f1c6b4329"
+       :revision => "ae2c9f73ad78511d240e1ae67de99cdb0f997668"
 
   depends_on "pkg-config" => :build
   depends_on "boost"
